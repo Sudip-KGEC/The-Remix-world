@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require("./routes/adminRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const songRoutes = require("./routes/songRoutes");
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(cookieParser())
 app.use("/api/auth" , authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/song", songRoutes);
 
 module.exports = app;
