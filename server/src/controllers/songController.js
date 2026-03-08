@@ -6,47 +6,70 @@ const uploadToImageKit = require("../services/storage.service");
 const generateStreamUrl = require("../utils/generateStreamUrl");
 
 
+
 // ADMIN - Upload Song
 exports.uploadSong = async (req, res) => {
   try {
 
-    const { title, artistName, category } = req.body;
+    const {
+      title,
+      artistName,
+      category,
+      bpm,
+      energyLevel,
+      isEarlyAccess,
+      earlyAccessExpiry,
+      audioFingerprint
+    } = req.body;
 
     let audioUrl = null;
     let videoUrl = null;
     let flacUrl = null;
 
-    // Upload AUDIO
+    const artistFolder = (artistName || "unknown")
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+    // AUDIO Upload
     if (req.files?.audio) {
+
+      const uniqueName = `${artistFolder}-${Date.now()}-${req.files.audio[0].originalname}`;
 
       const audioUpload = await uploadToImageKit(
         req.files.audio[0].buffer,
-        req.files.audio[0].originalname,
-        `The_Remix_World/audio/${artistName}`
+        uniqueName,
+        "remix_songs",
+        artistFolder
       );
 
       audioUrl = audioUpload.url;
     }
 
-    // Upload VIDEO
+    // VIDEO Upload
     if (req.files?.video) {
+
+      const uniqueName = `${Date.now()}-${req.files.video[0].originalname}`;
 
       const videoUpload = await uploadToImageKit(
         req.files.video[0].buffer,
-        req.files.video[0].originalname,
-        `The_Remix_World/video/${title}`
+        uniqueName,
+        "videos",
+        artistFolder
       );
 
       videoUrl = videoUpload.url;
     }
 
-    // Upload FLAC
+    // FLAC Upload
     if (req.files?.flac) {
+
+      const uniqueName = `${Date.now()}-${req.files.flac[0].originalname}`;
 
       const flacUpload = await uploadToImageKit(
         req.files.flac[0].buffer,
-        req.files.flac[0].originalname,
-        `The_Remix_World/flac/${title}`
+        uniqueName,
+        "flac",
+        artistFolder
       );
 
       flacUrl = flacUpload.url;
@@ -59,12 +82,17 @@ exports.uploadSong = async (req, res) => {
       adminId: req.user.id,
       audioUrl,
       videoUrl,
-      flacUrl
+      flacUrl,
+      bpm: bpm || 120,
+      energyLevel,
+      isEarlyAccess,
+      earlyAccessExpiry,
+      audioFingerprint
     });
 
     res.status(201).json({
       success: true,
-      message: "Song uploaded. Waiting for approval.",
+      message: "Song uploaded successfully. Waiting for admin approval.",
       data: song
     });
 
@@ -79,8 +107,6 @@ exports.uploadSong = async (req, res) => {
 
   }
 };
-
-
 
 // SUPER ADMIN - Approve Song
 exports.approveSong = async (req, res) => {
@@ -263,9 +289,8 @@ exports.likeSong = async (req, res) => {
   }
 };
 
+
 // comment 
-
-
 exports.addComment = async (req, res) => {
   try {
 

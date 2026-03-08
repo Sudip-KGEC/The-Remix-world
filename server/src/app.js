@@ -5,48 +5,54 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 
-
-
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes"); // added
+const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const songRoutes = require("./routes/songRoutes");
 const recommendRoutes = require("./routes/recommendRoutes");
 const djRoutes = require("./routes/djRoutes");
-const paymentRoutes = require("./routes/paymentRoutes")
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 
 
-// Security
+// Security headers
 app.use(helmet());
-app.use(morgan("dev"));
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-});
-
-app.use(limiter);
 
 
-// Middleware
+// Logging (disable in tests)
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("dev"));
+}
+
+
+// Rate limiter (disable during tests)
+if (process.env.NODE_ENV !== "test") {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+  });
+
+  app.use(limiter);
+}
+
+
+// CORS
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
 }));
 
+
+// Body parsing
 app.use(express.json());
 app.use(cookieParser());
 
 
-
-
-
-// Routes
+// API Routes
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/user", userRoutes); 
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/songs", songRoutes);
@@ -62,6 +68,5 @@ app.use((req, res) => {
     message: "Route not found"
   });
 });
-
 
 module.exports = app;

@@ -3,8 +3,10 @@ const router = express.Router();
 
 const { protect, authorize } = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
-
 const songController = require("../controllers/songController");
+
+const validate = require('../middlewares/validateMiddleware')
+const uploadSongSchema = require("../validators/uploadSongValidator");
 
 /**
  * ADMIN Upload Song
@@ -12,12 +14,13 @@ const songController = require("../controllers/songController");
 router.post(
   "/upload",
   protect,
-  authorize("ADMIN"),
+  authorize("ADMIN", "SUPER_ADMIN"),
   upload.fields([
     { name: "audio", maxCount: 1 },
     { name: "video", maxCount: 1 },
     { name: "flac", maxCount: 1 }
   ]),
+  validate(uploadSongSchema),
   songController.uploadSong
 );
 
@@ -118,5 +121,7 @@ router.get(
   protect,
   songController.getPlayHistory
 );
+
+
 
 module.exports = router;

@@ -18,7 +18,8 @@ const commentSchema = new mongoose.Schema(
   comment: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 500
   },
 
   likes: {
