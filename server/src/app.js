@@ -1,23 +1,67 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const morgan = require("morgan");
 
-const authRoutes = require('./routes/authRoutes');
+
+
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes"); // added
 const adminRoutes = require("./routes/adminRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const songRoutes = require("./routes/songRoutes");
+const recommendRoutes = require("./routes/recommendRoutes");
+const djRoutes = require("./routes/djRoutes");
+const paymentRoutes = require("./routes/paymentRoutes")
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+
+// Security
+app.use(helmet());
+app.use(morgan("dev"));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+});
+
+app.use(limiter);
+
+
+// Middleware
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
+
+
+
+
 
 // Routes
-app.use("/api/auth" , authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/song", songRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes); 
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/song", songRoutes);
+app.use("/api/v1/recommend", recommendRoutes);
+app.use("/api/v1/dj", djRoutes);
+app.use("/api/v1/payments", paymentRoutes);
+
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found"
+  });
+});
+
 
 module.exports = app;

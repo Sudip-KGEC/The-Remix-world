@@ -1,34 +1,122 @@
 const express = require("express");
-const { protect, authorize } = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware");
-const {uploadSong , approvedSong , streamingSong } = require('../controllers/songsController')
-
 const router = express.Router();
 
-// ADMIN Upload Song
+const { protect, authorize } = require("../middlewares/authMiddleware");
+const upload = require("../middlewares/upload");
+
+const songController = require("../controllers/songController");
+
+/**
+ * ADMIN Upload Song
+ */
 router.post(
   "/upload",
   protect,
   authorize("ADMIN"),
-  upload.single("audio"),
-  uploadSong
+  upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+    { name: "flac", maxCount: 1 }
+  ]),
+  songController.uploadSong
 );
 
-// SUPER ADMIN Approved 
+/**
+ * SUPER ADMIN Approve Song
+ */
 router.put(
-  "/approve/:id",
+  "/:id/approve",
   protect,
   authorize("SUPER_ADMIN"),
-  approvedSong 
+  songController.approveSong
 );
 
-
-
-// Streaming Song User 
-router.post(
-  "/stream/:id",
+/**
+ * USER Stream Song
+ */
+router.get(
+  "/:id/stream",
   protect,
-  streamingSong
+  songController.streamSong
+);
+
+/**
+ * PUBLIC Get Approved Songs
+ */
+router.get(
+  "/approved",
+  songController.getApprovedSongs
+);
+
+/**
+ * ADMIN Get Own Songs
+ */
+router.get(
+  "/my-songs",
+  protect,
+  authorize("ADMIN"),
+  songController.getMySongs
+);
+
+/**
+ * USER Like Song
+ */
+router.post(
+  "/:id/like",
+  protect,
+  songController.likeSong
+);
+
+/**
+ * USER Comment on Song
+ */
+router.post(
+  "/:id/comments",
+  protect,
+  songController.addComment
+);
+
+/**
+ * Get Song Comments
+ */
+router.get(
+  "/:id/comments",
+  songController.getSongComments
+);
+
+/**
+ * Like Comment
+ */
+router.post(
+  "/comments/:id/like",
+  protect,
+  songController.likeComment
+);
+
+/**
+ * Share Song
+ */
+router.post(
+  "/:id/share",
+  protect,
+  songController.shareSong
+);
+
+/**
+ * Trending Songs
+ */
+router.get(
+  "/trending",
+  songController.getTrendingSongs
+);
+
+/**
+ * User Play History
+ */
+router.get(
+  "/history",
+  protect,
+  songController.getPlayHistory
 );
 
 module.exports = router;

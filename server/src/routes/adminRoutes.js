@@ -1,46 +1,60 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-const { protect, authorize } = require("../middleware/authMiddleware");
-
 const router = express.Router();
 
-// Create DJ Admin (only SUPER_ADMIN)
+const { protect, authorize } = require("../middlewares/authMiddleware");
+
+const adminController = require("../controllers/adminController");
+const { getMySongs } = require("../controllers/songController");
+
+/**
+ * SUPER ADMIN - Create Admin / DJ
+ */
 router.post(
-  "/create",
+  "/admins",
   protect,
   authorize("SUPER_ADMIN"),
-  async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
+  adminController.createAdmin
+);
 
-      const exists = await User.findOne({ email });
-      if (exists)
-        return res.status(400).json({ message: "Admin already exists" });
+/**
+ * ADMIN - View own earnings
+ */
+router.get(
+  "/earnings",
+  protect,
+  authorize("ADMIN"),
+  adminController.getAdminEarnings
+);
 
-      const hashedPassword = await bcrypt.hash(password, 10);
 
-      const admin = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        role: "ADMIN",
-      });
+/**
+ * SUPER ADMIN - Platform overview
+ */
+router.get(
+  "/platform/overview",
+  protect,
+  authorize("SUPER_ADMIN"),
+  adminController.platformStats
+);
 
-     res.json({
-  message: "Admin created successfully",
-  admin: {
-    _id: admin._id,
-    name: admin.name,
-    email: admin.email,
-    role: admin.role
-  }
-});
+/**
+ * SUPER ADMIN - Total plays analytics
+ */
+router.get(
+  "/platform/plays",
+  protect,
+  authorize("SUPER_ADMIN"),
+  adminController.totalPlays
+);
 
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+/**
+ * SUPER ADMIN - Distribute revenue
+ */
+router.post(
+  "/platform/distribute-revenue",
+  protect,
+  authorize("SUPER_ADMIN"),
+  adminController.distributeRevenue
 );
 
 module.exports = router;

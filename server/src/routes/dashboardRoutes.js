@@ -1,18 +1,44 @@
 const express = require("express");
-const { protect, authorize } = require("../middleware/authMiddleware");
-
 const router = express.Router();
 
-router.get("/user", protect, authorize("USER"), (req, res) => {
-  res.json({ message: "User Dashboard" });
-});
+const { protect, authorize } = require("../middlewares/authMiddleware");
 
-router.get("/admin", protect, authorize("ADMIN"), (req, res) => {
-  res.json({ message: "Admin Dashboard" });
-});
+const dashboardController = require("../controllers/dashboardController");
 
-router.get("/super", protect, authorize("SUPER_ADMIN"), (req, res) => {
-  res.json({ message: "Super Admin Dashboard" });
-});
+/**
+ * @route   GET /api/v1/dashboard/user
+ * @desc    Get user dashboard statistics
+ * @access  Private (USER)
+ */
+router.get(
+  "/user",
+  protect,
+  authorize("USER"),
+  dashboardController.userDashboard
+);
+
+/**
+ * @route   GET /api/v1/dashboard/admin
+ * @desc    Get admin dashboard statistics
+ * @access  Private (ADMIN)
+ */
+router.get(
+  "/admin",
+  protect,
+  authorize("ADMIN"),
+  dashboardController.adminDashboard
+);
+
+/**
+ * @route   GET /api/v1/dashboard/super-admin
+ * @desc    Get super admin dashboard statistics
+ * @access  Private (SUPER_ADMIN)
+ */
+router.get(
+  "/super-admin",
+  protect,
+  authorize("SUPER_ADMIN"),
+  dashboardController.superAdminDashboard
+);
 
 module.exports = router;
