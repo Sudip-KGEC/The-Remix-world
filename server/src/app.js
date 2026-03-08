@@ -49,9 +49,9 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes); 
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
-app.use("/api/v1/song", songRoutes);
+app.use("/api/v1/songs", songRoutes);
 app.use("/api/v1/recommend", recommendRoutes);
-app.use("/api/v1/dj", djRoutes);
+app.use("/api/v1/djs", djRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 
 
