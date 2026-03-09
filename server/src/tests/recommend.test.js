@@ -7,7 +7,7 @@ const generateToken = require("./helpers/token");
 describe("Recommendation APIs", () => {
 
   /**
-   * GET PERSONALIZED RECOMMENDATIONS
+   * PERSONALIZED RECOMMENDATIONS
    */
   describe("GET /api/v1/recommend/recommendations", () => {
 
@@ -37,16 +37,67 @@ describe("Recommendation APIs", () => {
 
 
   /**
-   * GET SIMILAR SONGS
+   * SIMILAR SONGS
    */
-  describe("GET /api/v1/recommendations/songs/123/similar", () => {
+  describe("GET /api/v1/recommend/songs/123/similar", () => {
 
-    test("should return similar songs (public)", async () => {
+    test("should return similar songs", async () => {
 
       const res = await request(app)
-        .get("/api/v1/recommendations/songs/123/similar");
+        .get("/api/v1/recommend/songs/123/similar");
 
       expect([200,404]).toContain(res.statusCode);
+
+    });
+
+  });
+
+
+  /**
+   * TRENDING SONGS
+   */
+  describe("GET /api/v1/recommend/recommendations/trending", () => {
+
+    test("should return trending recommendations", async () => {
+
+      const res = await request(app)
+        .get("/api/v1/recommend/recommendations/trending");
+
+      expect(res.statusCode).toBe(200);
+
+    });
+
+  });
+
+
+  /**
+   * GENRE BASED RECOMMENDATIONS
+   */
+  describe("GET /api/v1/recommend/recommendations/genre/remix", () => {
+
+    test("should return genre recommendations", async () => {
+
+      const res = await request(app)
+        .get("/api/v1/recommend/recommendations/genre/remix");
+
+      expect(res.statusCode).toBe(200);
+
+    });
+
+  });
+
+
+  /**
+   * DJ BASED RECOMMENDATIONS
+   */
+  describe("GET /api/v1/recommend/recommendations/dj/123", () => {
+
+    test("should return DJ recommendations", async () => {
+
+      const res = await request(app)
+        .get("/api/v1/recommend/recommendations/dj/123");
+
+      expect([200,500]).toContain(res.statusCode);
 
     });
 

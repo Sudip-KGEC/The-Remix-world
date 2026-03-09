@@ -13,6 +13,7 @@ const songRoutes = require("./routes/songRoutes");
 const recommendRoutes = require("./routes/recommendRoutes");
 const djRoutes = require("./routes/djRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const playlistRoutes = require("./routes/playlistRoutes");
 
 const app = express();
 
@@ -52,13 +53,14 @@ app.use(cookieParser());
 
 // API Routes
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/songs", songRoutes);
 app.use("/api/v1/recommend", recommendRoutes);
 app.use("/api/v1/djs", djRoutes);
 app.use("/api/v1/payments", paymentRoutes);
+app.use("/api/v1/playlists", playlistRoutes);
 
 
 // 404 handler

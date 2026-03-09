@@ -5,10 +5,9 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
 
 const dashboardController = require("../controllers/dashboardController");
 
+
 /**
- * @route   GET /api/v1/dashboard/user
- * @desc    Get user dashboard statistics
- * @access  Private (USER)
+ * USER DASHBOARD
  */
 router.get(
   "/user",
@@ -17,10 +16,16 @@ router.get(
   dashboardController.userDashboard
 );
 
+router.get(
+  "/user/activity",
+  protect,
+  authorize("USER"),
+  dashboardController.userActivity
+);
+
+
 /**
- * @route   GET /api/v1/dashboard/admin
- * @desc    Get admin dashboard statistics
- * @access  Private (ADMIN)
+ * ADMIN DASHBOARD
  */
 router.get(
   "/admin",
@@ -29,16 +34,43 @@ router.get(
   dashboardController.adminDashboard
 );
 
+router.get(
+  "/admin/songs",
+  protect,
+  authorize("ADMIN"),
+  dashboardController.adminSongs
+);
+
+router.get(
+  "/admin/revenue",
+  protect,
+  authorize("ADMIN"),
+  dashboardController.adminRevenue
+);
+
+
 /**
- * @route   GET /api/v1/dashboard/super-admin
- * @desc    Get super admin dashboard statistics
- * @access  Private (SUPER_ADMIN)
+ * SUPER ADMIN DASHBOARD
  */
 router.get(
   "/super-admin",
   protect,
   authorize("SUPER_ADMIN"),
   dashboardController.superAdminDashboard
+);
+
+router.get(
+  "/super-admin/analytics",
+  protect,
+  authorize("SUPER_ADMIN"),
+  dashboardController.superAdminAnalytics
+);
+
+router.get(
+  "/super-admin/users",
+  protect,
+  authorize("SUPER_ADMIN"),
+  dashboardController.superAdminUsers
 );
 
 module.exports = router;

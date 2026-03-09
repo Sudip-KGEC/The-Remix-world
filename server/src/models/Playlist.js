@@ -4,20 +4,27 @@ const playlistSchema = new mongoose.Schema(
 {
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
+    maxlength: 100
   },
 
   description: {
-    type: String
+    type: String,
+    trim: true,
+    default: ""
   },
 
   coverImage: {
-    type: String
+    type: String,
+    default: ""
   },
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true,
+    index: true
   },
 
   songs: [
@@ -28,14 +35,16 @@ const playlistSchema = new mongoose.Schema(
   ],
 
   category: {
-    type: String
+    type: String,
+    trim: true,
+    default: ""
   },
 
   isTrending: {
     type: Boolean,
-    default: false
+    default: false,
+    index: true
   }
-
 },
 { timestamps: true }
 );

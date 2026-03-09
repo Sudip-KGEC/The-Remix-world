@@ -8,50 +8,23 @@ const playlistValidatorSchema = Joi.object({
     .max(100)
     .required()
     .messages({
-      "string.empty": "Playlist name is required",
-      "string.min": "Playlist name must be at least 2 characters",
-      "string.max": "Playlist name cannot exceed 100 characters"
+      "string.empty": "Playlist name is required"
     }),
 
   description: Joi.string()
     .trim()
     .max(500)
-    .allow("", null)
-    .messages({
-      "string.max": "Description cannot exceed 500 characters"
-    }),
+    .allow("", null),
 
   coverImage: Joi.string()
     .uri()
-    .optional()
-    .messages({
-      "string.uri": "Cover image must be a valid URL"
-    }),
-
-  createdBy: Joi.string()
-    .pattern(/^[0-9a-fA-F]{24}$/)
-    .optional()
-    .messages({
-      "string.pattern.base": "Invalid user ID"
-    }),
-
-  songs: Joi.array()
-    .items(
-      Joi.string().pattern(/^[0-9a-fA-F]{24}$/)
-    )
-    .optional()
-    .messages({
-      "string.pattern.base": "Invalid song ID"
-    }),
+    .optional(),
 
   category: Joi.string()
     .trim()
     .max(100)
-    .optional(),
+    .optional()
 
-  isTrending: Joi.boolean()
-    .default(false)
+}).options({ allowUnknown: false });
 
-});
-
-module.exports = playlistValidatorSchema;
+module.exports = { playlistValidatorSchema };

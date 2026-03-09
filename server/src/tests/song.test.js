@@ -182,3 +182,102 @@ describe("Song APIs", () => {
   });
 
 });
+
+
+/**
+ * PUBLIC - Search Songs
+ */
+describe("GET /api/v1/songs/search", () => {
+
+  test("should search songs", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/songs/search?q=test");
+
+    expect(res.statusCode).toBe(200);
+
+  });
+
+});
+
+
+/**
+ * PUBLIC - Get Song By ID
+ */
+describe("GET /api/v1/songs/:id", () => {
+
+  test("should return song or error", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/songs/123");
+
+    expect([200,404,500]).toContain(res.statusCode);
+
+  });
+
+});
+
+
+/**
+ * PUBLIC - Recommended Songs
+ */
+describe("GET /api/v1/songs/recommended", () => {
+
+  test("should return recommended songs", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/songs/recommended");
+
+    expect(res.statusCode).toBe(200);
+
+  });
+
+});
+
+
+/**
+ * PUBLIC - DJ Songs
+ */
+describe("GET /api/v1/songs/dj/:djId", () => {
+
+  test("should return dj songs", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/songs/dj/123");
+
+    expect([200,500]).toContain(res.statusCode);
+
+  });
+
+});
+
+
+/**
+ * USER - Download Song
+ */
+describe("POST /api/v1/songs/:id/download", () => {
+
+  test("should deny without token", async () => {
+
+    const res = await request(app)
+      .post("/api/v1/songs/123/download");
+
+    expect(res.statusCode).toBe(401);
+
+  });
+
+
+  test("should allow user", async () => {
+
+    const user = await createTestUser("USER");
+    const token = generateToken(user._id, "USER");
+
+    const res = await request(app)
+      .post("/api/v1/songs/123/download")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect([200,404,500]).toContain(res.statusCode);
+
+  });
+
+});

@@ -2,106 +2,131 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
+{
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
 
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true
-    },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true
+  },
 
-    password: {
-      type: String,
-      required: true
-    },
+  password: {
+    type: String,
+    required: true
+  },
 
-    role: {
-      type: String,
-      enum: ["USER", "ADMIN", "SUPER_ADMIN"],
-      default: "USER"
-    },
+  role: {
+    type: String,
+    enum: ["USER", "ADMIN", "SUPER_ADMIN"],
+    default: "USER"
+  },
 
-    // Credit system
-    credits: {
-      type: Number,
-      default: 100
-    },
+  credits: {
+    type: Number,
+    default: 100
+  },
 
-    // Premium membership
-    isPremium: {
-      type: Boolean,
-      default: false
-    },
+  isPremium: {
+    type: Boolean,
+    default: false
+  },
 
-    premiumExpiry: {
-      type: Date
-    },
+  premiumExpiry: Date,
 
-    // Admin earnings
-    totalEarning: {
-      type: Number,
-      default: 0
-    },
+  totalEarning: {
+    type: Number,
+    default: 0
+  },
 
-    // DJ followers
-    followingDJs: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-
-    followers: {
-      type: Number,
-      default: 0
-    },
-
-    // Referral system
-    referralCode: {
-      type: String,
-      unique: true,
-      sparse: true
-    },
-
-    referredUsers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-
-    referredBy: {
+  followingDJs: [
+    {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
-    },
-
-    // Payment history
-    payments: [
-      {
-        amount: Number,
-        creditsAdded: Number,
-        paymentId: String,
-        date: {
-          type: Date,
-          default: Date.now
-        }
-      }
-    ],
-
-    // Account verification (for DJ admins)
-    isVerified: {
-      type: Boolean,
-      default: false
     }
+  ],
 
+  followers: {
+    type: Number,
+    default: 0
   },
-  { timestamps: true }
+
+  referralCode: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+
+  referredUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ],
+
+  referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+
+  payments: [
+    {
+      amount: Number,
+      creditsAdded: Number,
+      paymentId: String,
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
+
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+
+  // NEW FEATURES
+
+  downloads: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Song"
+    }
+  ],
+
+  playlists: [
+    {
+      name: String,
+      songs: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Song"
+        }
+      ]
+    }
+  ],
+
+  history: [
+    {
+      song: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Song"
+      },
+      playedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
+
+},
+{ timestamps: true }
 );
 
 module.exports = mongoose.model("User", UserSchema);

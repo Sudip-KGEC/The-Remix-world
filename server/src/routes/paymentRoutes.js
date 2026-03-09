@@ -2,13 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const { protect } = require("../middlewares/authMiddleware");
-
 const paymentController = require("../controllers/paymentController");
 
+
 /**
- * @route   POST /api/v1/payments/order
- * @desc    Create payment order
- * @access  Private
+ * CREATE PAYMENT ORDER
  */
 router.post(
   "/order",
@@ -17,14 +15,46 @@ router.post(
 );
 
 /**
- * @route   POST /api/v1/payments/verify
- * @desc    Verify payment after checkout
- * @access  Private
+ * VERIFY PAYMENT
  */
 router.post(
   "/verify",
   protect,
   paymentController.verifyPayment
+);
+
+/**
+ * PAYMENT HISTORY
+ */
+router.get(
+  "/history",
+  protect,
+  paymentController.getPaymentHistory
+);
+
+/**
+ * PAYMENT PLANS
+ */
+router.get(
+  "/plans",
+  paymentController.getPaymentPlans
+);
+
+/**
+ * SUBSCRIBE PLAN
+ */
+router.post(
+  "/subscribe",
+  protect,
+  paymentController.subscribePlan
+);
+
+/**
+ * PAYMENT WEBHOOK
+ */
+router.post(
+  "/webhook",
+  paymentController.paymentWebhook
 );
 
 module.exports = router;

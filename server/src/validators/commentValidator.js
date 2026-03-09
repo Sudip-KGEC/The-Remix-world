@@ -1,13 +1,25 @@
 const Joi = require("joi");
 
+/**
+ * MongoDB ObjectId Validation
+ */
+const objectId = Joi.string()
+  .pattern(/^[0-9a-fA-F]{24}$/)
+  .messages({
+    "string.pattern.base": "Invalid ID format"
+  });
+
+
+/**
+ * CREATE COMMENT VALIDATOR
+ */
+
 const commentValidatorSchema = Joi.object({
 
-  songId: Joi.string()
-    .pattern(/^[0-9a-fA-F]{24}$/)
+  songId: objectId
     .required()
     .messages({
-      "string.empty": "Song ID is required",
-      "string.pattern.base": "Invalid song ID"
+      "string.empty": "Song ID is required"
     }),
 
   comment: Joi.string()
@@ -17,17 +29,17 @@ const commentValidatorSchema = Joi.object({
     .required()
     .messages({
       "string.empty": "Comment cannot be empty",
+      "string.min": "Comment cannot be empty",
       "string.max": "Comment cannot exceed 500 characters"
     }),
 
-  parentCommentId: Joi.string()
-    .pattern(/^[0-9a-fA-F]{24}$/)
+  parentCommentId: objectId
     .allow(null)
     .optional()
-    .messages({
-      "string.pattern.base": "Invalid parent comment ID"
-    })
 
-});
+}).options({ allowUnknown: false });
 
-module.exports = commentValidatorSchema;
+
+module.exports = {
+  commentValidatorSchema
+};

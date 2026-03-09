@@ -9,7 +9,6 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
 
-  // ✅ modern mongoose connect
   await mongoose.connect(uri);
 });
 
@@ -22,7 +21,6 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
 });

@@ -4,18 +4,19 @@ const router = express.Router();
 const { protect } = require("../middlewares/authMiddleware");
 const userController = require("../controllers/userController");
 
-/**
- * @route   GET /api/v1/users/me
- * @desc    Get logged-in user profile
- * @access  Private
- */
+
 router.get("/me", protect, userController.getMyProfile);
 
-/**
- * @route   GET /api/v1/users/credits
- * @desc    Get logged-in user credit balance
- * @access  Private
- */
 router.get("/credits", protect, userController.getMyCredits);
+
+router.get("/downloads", protect, userController.getDownloads);
+
+router.get("/playlists", protect, userController.getPlaylists);
+
+router.post("/follow-dj", protect, userController.followDJ);
+
+router.get("/following", protect, userController.getFollowing);
+
+router.get("/history", protect, userController.getHistory);
 
 module.exports = router;

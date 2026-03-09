@@ -3,29 +3,26 @@ const router = express.Router();
 
 const authController = require("../controllers/authController");
 const validate = require("../middlewares/validateMiddleware");
-const { registerValidatorSchema, loginValidatorSchema } = require("../validators/authValidator");
 
+const {
+  userRegisterValidatorSchema,
+  userLoginValidatorSchema
+} = require("../validators/authValidator");
 
 
 // Register
 router.post(
   "/register",
-  validate(registerValidatorSchema),
+  validate(userRegisterValidatorSchema),
   authController.register
 );
+
 
 // Login
 router.post(
   "/login",
-  validate(loginValidatorSchema),
+  validate(userLoginValidatorSchema),
   authController.login
 );
-
-// // Get current logged in user
-// router.get(
-//   "/me",
-//   protect,
-//   authController.getMe
-// );
 
 module.exports = router;

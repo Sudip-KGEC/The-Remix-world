@@ -1,15 +1,19 @@
 const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 
-async function createTestUser(role = "USER") {
+async function createTestUser(role = "USER", overrides = {}) {
+
   const hashedPassword = await bcrypt.hash("password123", 10);
 
-  const user = await User.create({
+  const userData = {
     name: "Test User",
-    email: `test${Date.now()}@mail.com`,
+    email: `test_${Date.now()}_${Math.floor(Math.random()*1000)}@mail.com`,
     password: hashedPassword,
-    role: role
-  });
+    role,
+    ...overrides
+  };
+
+  const user = await User.create(userData);
 
   return user;
 }

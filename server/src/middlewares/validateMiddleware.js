@@ -7,10 +7,15 @@ const validate = (schema) => {
     });
 
     if (error) {
-      const errors = error.details.map(err => err.message);
+
+      const errors = error.details.map(err => ({
+        field: err.path.join("."),
+        message: err.message
+      }));
 
       return res.status(400).json({
         success: false,
+        message: "Validation failed",
         errors
       });
     }

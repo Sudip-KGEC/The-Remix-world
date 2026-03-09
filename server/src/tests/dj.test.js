@@ -72,3 +72,45 @@ describe("DJ APIs", () => {
   });
 
 });
+
+
+describe("GET /api/v1/djs", () => {
+
+  test("should return all DJs", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/djs");
+
+    expect(res.statusCode).toBe(200);
+
+  });
+
+});
+
+
+describe("GET /api/v1/djs/trending", () => {
+
+  test("should return trending DJs", async () => {
+
+    const res = await request(app)
+      .get("/api/v1/djs/trending");
+
+    expect(res.statusCode).toBe(200);
+
+  });
+
+});
+
+
+describe("DELETE /api/v1/djs/:id/unfollow", () => {
+
+  test("should deny without token", async () => {
+
+    const res = await request(app)
+      .delete("/api/v1/djs/123/unfollow");
+
+    expect(res.statusCode).toBe(401);
+
+  });
+
+});

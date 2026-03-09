@@ -1,6 +1,10 @@
 const Joi = require("joi");
 
-const registerValidatorSchema = Joi.object({
+/**
+ * USER REGISTER VALIDATOR
+ */
+
+const userRegisterValidatorSchema = Joi.object({
 
   name: Joi.string()
     .trim()
@@ -24,28 +28,43 @@ const registerValidatorSchema = Joi.object({
     }),
 
   password: Joi.string()
+    .trim()
     .min(6)
     .max(100)
     .required()
     .messages({
-      "string.min": "Password must be at least 6 characters"
+      "string.empty": "Password is required",
+      "string.min": "Password must be at least 6 characters",
+      "string.max": "Password cannot exceed 100 characters"
     }),
 
-  // referral system
+  // Referral code used during signup
   referralCode: Joi.string()
     .trim()
     .alphanum()
     .min(4)
     .max(20)
     .optional()
+    .messages({
+      "string.alphanum": "Referral code must be alphanumeric",
+      "string.min": "Referral code must be at least 4 characters",
+      "string.max": "Referral code cannot exceed 20 characters"
+    })
 
-});
+}).options({ allowUnknown: false });
 
 
-const loginValidatorSchema = Joi.object({
+
+/**
+ * USER LOGIN VALIDATOR
+ */
+
+const userLoginValidatorSchema = Joi.object({
 
   email: Joi.string()
+    .trim()
     .email()
+    .lowercase()
     .required()
     .messages({
       "string.email": "Invalid email format",
@@ -58,10 +77,11 @@ const loginValidatorSchema = Joi.object({
       "string.empty": "Password is required"
     })
 
-});
+}).options({ allowUnknown: false });
+
 
 
 module.exports = {
-  registerValidatorSchema,
-  loginValidatorSchema
+  userRegisterValidatorSchema,
+  userLoginValidatorSchema
 };

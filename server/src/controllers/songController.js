@@ -466,3 +466,209 @@ exports.getDjProfile = async (req, res) => {
   });
 
 };
+
+// GET SINGLE SONG DETAILS
+exports.getSongById = async (req, res) => {
+
+  try {
+
+    const song = await Song
+      .findById(req.params.id)
+      .populate("adminId", "name");
+
+    if (!song) {
+      return res.status(404).json({
+        success: false,
+        message: "Song not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      song
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+
+
+// SEARCH SONGS
+exports.searchSongs = async (req, res) => {
+
+  try {
+
+    const { q, category } = req.query;
+
+    const filter = { isApproved: true };
+
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { artistName: { $regex: q, $options: "i" } }
+      ];
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const songs = await Song
+      .find(filter)
+      .sort({ playCount: -1 })
+      .limit(20)
+      .populate("adminId", "name");
+
+    res.json({
+      success: true,
+      count: songs.length,
+      songs
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+
+
+// GET RECOMMENDED SONGS
+exports.getRecommendedSongs = async (req, res) => {
+  try {
+
+    const songs = await Song.find({
+      isApproved: true
+    })
+      .sort({
+        trendingScore: -1,
+        playCount: -1,
+        likeCount: -1
+      })
+      .limit(15)
+      .populate({
+        path: "adminId",
+        select: "name",
+        model: "User"
+      })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: songs.length,
+      songs
+    });
+
+  } catch (error) {
+
+    console.error("Recommended Songs Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch recommended songs"
+    });
+
+  }
+};
+
+
+
+// GET SONGS BY DJ
+exports.getSongsByDJ = async (req, res) => {
+
+  try {
+
+    const songs = await Song
+      .find({
+        adminId: req.params.djId,
+        isApproved: true
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      songs
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+
+
+// DOWNLOAD SONG
+exports.downloadSong = async (req, res) => {
+
+  try {
+
+    const song = await Song.findById(req.params.id);
+
+    if (!song) {
+      return res.status(404).json({
+        success: false,
+        message: "Song not found"
+      });
+    }
+
+    if (!song.isApproved) {
+      return res.status(403).json({
+        success: false,
+        message: "Song not approved"
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user.isPremium && user.credits < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Not enough credits"
+      });
+    }
+
+    // deduct credit if not premium
+    if (!user.isPremium) {
+      user.credits -= 1;
+      await user.save();
+    }
+
+    // increase download count
+    song.downloadCount += 1;
+    await song.save();
+
+    res.json({
+      success: true,
+      downloadUrl: song.audioUrl,
+      remainingCredits: user.credits
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};

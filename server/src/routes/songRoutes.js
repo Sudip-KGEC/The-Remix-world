@@ -3,13 +3,22 @@ const router = express.Router();
 
 const { protect, authorize } = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
-const songController = require("../controllers/songController");
+const validate = require("../middlewares/validateMiddleware");
 
-const validate = require('../middlewares/validateMiddleware')
+const { commentValidatorSchema } = require("../validators/commentValidator");
 const uploadSongSchema = require("../validators/uploadSongValidator");
 
+const songController = require("../controllers/songController");
+
+
+
+/* ======================================================
+   ADMIN SONG MANAGEMENT
+====================================================== */
+
 /**
- * ADMIN Upload Song
+ * Upload Song
+ * POST /api/v1/songs/upload
  */
 router.post(
   "/upload",
@@ -24,8 +33,10 @@ router.post(
   songController.uploadSong
 );
 
+
 /**
- * SUPER ADMIN Approve Song
+ * Approve Song
+ * PUT /api/v1/songs/:id/approve
  */
 router.put(
   "/:id/approve",
@@ -34,25 +45,10 @@ router.put(
   songController.approveSong
 );
 
-/**
- * USER Stream Song
- */
-router.get(
-  "/:id/stream",
-  protect,
-  songController.streamSong
-);
 
 /**
- * PUBLIC Get Approved Songs
- */
-router.get(
-  "/approved",
-  songController.getApprovedSongs
-);
-
-/**
- * ADMIN Get Own Songs
+ * Get Admin Songs
+ * GET /api/v1/songs/my-songs
  */
 router.get(
   "/my-songs",
@@ -61,8 +57,102 @@ router.get(
   songController.getMySongs
 );
 
+
+
+/* ======================================================
+   PUBLIC DISCOVERY APIs
+====================================================== */
+
 /**
- * USER Like Song
+ * Get Approved Songs
+ */
+router.get(
+  "/approved",
+  songController.getApprovedSongs
+);
+
+/**
+ * Trending Songs
+ */
+router.get(
+  "/trending",
+  songController.getTrendingSongs
+);
+
+/**
+ * Recommended Songs
+ */
+router.get(
+  "/recommended",
+  songController.getRecommendedSongs
+);
+
+/**
+ * Search Songs
+ */
+router.get(
+  "/search",
+  songController.searchSongs
+);
+
+/**
+ * Songs by DJ
+ */
+router.get(
+  "/dj/:djId",
+  songController.getSongsByDJ
+);
+
+
+
+/* ======================================================
+   USER INTERACTION APIs
+====================================================== */
+
+/**
+ * Play History
+ */
+router.get(
+  "/history",
+  protect,
+  songController.getPlayHistory
+);
+
+/**
+ * Like Comment
+ */
+router.post(
+  "/comments/:id/like",
+  protect,
+  songController.likeComment
+);
+
+
+
+/* ======================================================
+   SONG ACTION ROUTES (ID BASED)
+====================================================== */
+
+/**
+ * Stream Song
+ */
+router.get(
+  "/:id/stream",
+  protect,
+  songController.streamSong
+);
+
+/**
+ * Download Song
+ */
+router.post(
+  "/:id/download",
+  protect,
+  songController.downloadSong
+);
+
+/**
+ * Like Song
  */
 router.post(
   "/:id/like",
@@ -71,11 +161,12 @@ router.post(
 );
 
 /**
- * USER Comment on Song
+ * Comment on Song
  */
 router.post(
   "/:id/comments",
   protect,
+  validate(commentValidatorSchema),
   songController.addComment
 );
 
@@ -88,15 +179,6 @@ router.get(
 );
 
 /**
- * Like Comment
- */
-router.post(
-  "/comments/:id/like",
-  protect,
-  songController.likeComment
-);
-
-/**
  * Share Song
  */
 router.post(
@@ -106,22 +188,12 @@ router.post(
 );
 
 /**
- * Trending Songs
+ * Get Song Details
  */
 router.get(
-  "/trending",
-  songController.getTrendingSongs
+  "/:id",
+  songController.getSongById
 );
-
-/**
- * User Play History
- */
-router.get(
-  "/history",
-  protect,
-  songController.getPlayHistory
-);
-
 
 
 module.exports = router;
